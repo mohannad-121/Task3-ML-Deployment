@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>California Housing Price Predictor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    #results {
+      white-space: pre-wrap;
+      background: #f7f7f7;
+      padding: 10px;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+    #plot {
+      max-width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>California Housing Price Predictor</h1>
+
+  <div class="card">
+    <h2>Upload CSV</h2>
+    <form id="upload-form">
+      <input type="file" id="file-input" accept=".csv" />
+      <button type="submit">Send to API</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <div class="card">
+    <h2>Predictions (preview)</h2>
+    <div id="results">No predictions yet.</div>
+  </div>
+
+  <div class="card">
+    <h2>Prediction Plot</h2>
+    <img id="plot" alt="Prediction chart will appear here" />
+  </div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/predict";
+
+    const form = document.getElementById("upload-form");
+    const fileInput = document.getElementById("file-input");
+    const statusEl = document.getElementById("status");
+    const resultsEl = document.getElementById("results");
+    const plotEl = document.getElementById("plot");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please choose a CSV file first.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      statusEl.textContent = "Uploading and predicting...";
+      resultsEl.textContent = "";
+      plotEl.src = "";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          statusEl.textContent = "Error: " + (errorData.detail || response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        statusEl.textContent =
+          `Got ${data.num_rows} rows. Showing up to 50 here.`;
+
+        resultsEl.textContent = JSON.stringify(data.preview, null, 2);
+
+        if (data.plot_image) {
+          plotEl.src = "data:image/png;base64," + data.plot_image;
+        } else {
+          plotEl.alt = "No plot available (target column not in CSV).";
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Request failed: " + err;
+      }
+    });
+  </script>
+</body>
+</html>
