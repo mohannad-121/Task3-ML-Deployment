@@ -76,7 +76,8 @@ def build_model_pipeline() -> Pipeline:
     )
 
     model = RandomForestRegressor(
-        n_estimators=200,
+        n_estimators=50,
+        max_depth=20,
         random_state=42,
         n_jobs=-1,
     )
