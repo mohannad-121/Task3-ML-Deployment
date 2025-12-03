@@ -1,11 +1,8 @@
-# backend/app.py
 from pydantic import BaseModel
 from fastapi import Header
-
 from pathlib import Path
 import base64
 import io
-
 import pandas as pd
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,7 +21,7 @@ CHARTS_DIR = PROJECT_ROOT / "charts"
 
 app = FastAPI(title="California Housing Prediction API")
 
-# Allow frontend from any origin (simple for local dev)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -59,7 +56,7 @@ async def predict(file: UploadFile = File(...)):
     if df.empty:
         raise HTTPException(status_code=400, detail="Uploaded CSV is empty.")
 
-    # If the CSV contains the target column, we can plot actual vs predicted
+    
     if TARGET_COLUMN in df.columns:
         y_true = df[TARGET_COLUMN].values
         feature_df = df.drop(columns=[TARGET_COLUMN])
