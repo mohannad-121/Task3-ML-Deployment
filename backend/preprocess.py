@@ -1,9 +1,6 @@
-
-
 from pathlib import Path
 import sys
 from typing import Tuple, Dict, Any
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -16,7 +13,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 
 
-# ---- Dataset config ----
+
 TARGET_COLUMN = "median_house_value"
 
 NUMERIC_FEATURES = [
@@ -144,7 +141,7 @@ def main():
     default_csv = project_root / "datasets" / "housing.csv"
     default_model_path = project_root / "models" / "model.pkl"
 
-    # Allow optional CSV path from command line
+  
     csv_path = Path(sys.argv[1]) if len(sys.argv) > 1 else default_csv
 
     metrics = train_and_save_model(csv_path, default_model_path)
