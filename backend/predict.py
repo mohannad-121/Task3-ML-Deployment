@@ -1,11 +1,7 @@
-# backend/predict.py
-
 from pathlib import Path
 from typing import List, Tuple
-
 import joblib
 import pandas as pd
-
 from .preprocess import NUMERIC_FEATURES, CATEGORICAL_FEATURES
 
 
